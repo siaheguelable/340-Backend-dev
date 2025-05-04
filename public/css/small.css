@@ -1,10 +1,3 @@
-
-
-
-@media only screen and (min-width: 38rem) {
- 
-
-/******* Change Box Model ***************/
 *,
 *:before,
 *:after {
@@ -24,7 +17,7 @@
 }
 nav ul li{
   display: inline;
-  margin: 80px;
+  margin: 20px;
   
   
 }
@@ -38,21 +31,22 @@ nav{
 .hero {
   display: grid;
   grid-template-columns:  1fr 1fr;
-  padding: 20px;
+
   color: blue;
+  margin-left: -430px;
   
  
 }
 
 #delorean-hero {
   
-  margin-left: 650px;
-  z-index: 1;
-  box-shadow: #f0e8e8 0px 0px 10px;
-  background-color: transparent;
- 
-   
- }
+ margin-left: 450px;
+ z-index: 1;
+ box-shadow: #f0e8e8 0px 0px 10px;
+ background-color: transparent;
+
+  
+}
 
 #delorean{
   margin-left: -100px;
@@ -65,16 +59,16 @@ nav{
 }
 
 section .container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
+  display: block;
+  
 }
 
 .vehicle-details{
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns:1fr 1fr;
   gap: 20px;
   margin-left: 20px;
+  grid-template-rows: 2/3;
   
 }
 
@@ -82,6 +76,7 @@ section .container {
   margin-left: 20px;
   margin-top: 20px;
   padding: 20px;
+  grid-template-rows: 1/2;
   
  
 }
@@ -110,12 +105,7 @@ ul{
 .reviews li{
  
   
-  padding: 35px;
-  font-size: 30px;
+  padding: 10px;
+  font-size: 25px;
  
-}
-
-
-
-
 }
