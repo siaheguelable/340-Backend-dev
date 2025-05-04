@@ -33,7 +33,14 @@ nav{
   background-color: black;
   color: white;
   padding: 1px;
+  margin-left: 5px;
 }
+ nav ul li{
+margin-left: 100px;
+
+  font-size: 1em;
+
+ }
 
 .hero {
   display: grid;
