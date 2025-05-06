@@ -1,6 +1,4 @@
 
-
-
 @media only screen and (min-width: 38rem) {
  
 
@@ -57,12 +55,19 @@ margin-left: 100px;
   z-index: 1;
   box-shadow: #f0e8e8 0px 0px 10px;
   background-color: transparent;
- 
    
  }
 
+ #delorean-hero img{
+  width: 200px;
+  height: 50px;
+ }
+
 #delorean{
+  width: 500px;
+  height: 300px;
   margin-left: -100px;
+
 }
 
 #delorean-hero p{
