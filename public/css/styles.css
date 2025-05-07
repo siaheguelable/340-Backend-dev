@@ -1,5 +1,5 @@
 
-@media only screen and (min-width: 38rem) {
+@media only screen and (min-width: 33rem) {
  
 
 /******* Change Box Model ***************/
@@ -20,25 +20,19 @@
   margin: 20px 0;
   margin-top: -25px;
 }
-nav ul li{
-  display: inline;
-  margin: 80px;
-  
-  
-}
+
 
 nav{
   background-color: black;
   color: white;
-  padding: 1px;
-  margin-left: 5px;
+  text-align: center;
 }
- nav ul li{
-margin-left: 100px;
 
-  font-size: 1em;
-
- }
+nav ul li{
+  font-size: 18px;
+  margin: 15px;
+  
+}
 
 .hero {
   display: grid;
