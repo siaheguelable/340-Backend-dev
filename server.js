@@ -6,55 +6,60 @@
 /* ***********************
  * Require Statements
  *************************/
-const utilities = require('./utilities')
+const utilities = require('./utilities/')
 const express = require("express")
 const expressLayouts = require("express-ejs-layouts")
 const env = require("dotenv").config()
 const app = express()
 const baseController = require("./controllers/baseController")
 const inventoryRoute = require("./routes/inventoryRoute")
+const errorRoutes = require("./routes/errorRoutes");
+
+app.use("/", errorRoutes);
+
 
 /* ***********************
  * View Engine and Templates
  *************************/
 app.set('view engine', 'ejs')
 app.use(expressLayouts)
-app.set('layout', './layouts/layout') // not at views root
+app.set('layout', './layouts/layout')
 
-/* ***********************
- * Routes
- *************************/
+// Serve static files from /public
+app.use(express.static('public'))
+
+// Routes
 const static = require("./routes/static")
 app.use(static)
 
-// File Not Found Route - must be last route in list
-//app.use(async (req, res, next) => {
-  //next({ status: 404, message: 'Sorry, we appear to have lost that page.' });
-//});
- 
-
-
-/* ***********************
- * Middleware
- * Middleware is code that runs before the route handler
- *************************/
-
-
-// index route
-app.get("/", baseController.buildHome)
-// Inventory routes
+// index route unit 3 activity
+// Index route
+app.get("/", utilities.handleErrors(baseController.buildHome))
+// Inventory routes unit 3 activity
 app.use("/inv", inventoryRoute)
 
 
-/*app.use(async (err, req, res, next) => {
-  let nav = await utilities.getNav()
-  console.error(`Error at: "${req.originalUrl}": ${err.message}`)
-  res.render("errors/error", {
-    title: err.status || 'Server Error',
+// File Not Found Route - must be last route in list
+// Catch 404 errors
+app.use((req, res, next) => {
+  const error = new Error("Page not found");
+  error.status = 404;
+  next(error);
+});
+
+// Central error-handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  const status = err.status || 500;
+  res.status(status).render("error", {
+    title: "Server Error",
     message: err.message,
-    nav
-  })
-})*/
+    status,
+  });
+});
+
+
+
 
 /* ***********************
  * Local Server Information

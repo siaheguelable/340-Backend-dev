@@ -28,5 +28,15 @@ async function getInventoryByClassificationId(classification_id) {
   }
 }
 
-module.exports = {getClassifications, getInventoryByClassificationId};
-module.exports = {getClassifications};
+async function getInventoryById(invId) {
+  return await pool.query(
+    "SELECT * FROM inventory WHERE inv_id = $1",
+    [invId]
+  ).then(result => result.rows[0]);
+}
+
+
+
+
+module.exports = {getClassifications, getInventoryByClassificationId, getInventoryById};
+

@@ -28,9 +28,10 @@ nav{
   text-align: center;
 }
 
-nav ul li{
+nav ul li a{
   font-size: 18px;
   margin: 15px;
+  color: white;
   
 }
 
@@ -123,10 +124,52 @@ ul{
 
 
 #inv-display li{
-  display: grid;
-  grid-template-columns:  1fr 1fr;
+  display: inline-block;
+  margin: 10px;
+
+  grid-template-columns:  1fr 1fr 1fr  ;
+  text-align: center;
+  
+ 
 }
 
+
+
+.vehicle-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.vehicle-img {
+  max-width: 100%;
+  width: 400px;
+}
+
+.vehicle-info {
+  flex: 1;
+  min-width: 250px;
+  font-size: 1.1rem;
+}
+
+.vehicle-detail h1 {
+  margin-bottom: 1rem;
+}
+
+
+.vehicle-detail{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  
+  
+}
+
+.vehicle-info{
+  background-color: #ccc;
+  padding: 20px;
+
+}
 
 
 
