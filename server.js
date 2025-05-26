@@ -51,7 +51,7 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   console.error(err.stack);
   const status = err.status || 500;
-  res.status(status).render("error", {
+  res.status(status).render("errors/error", {
     title: "Server Error",
     message: err.message,
     status,
