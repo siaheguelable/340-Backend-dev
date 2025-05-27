@@ -1,6 +1,0 @@
-
-
-session :httpsor flash message://byui-cse.github.io/cse340-ww-content/views/session-message.html
-
-
-CONNECTION RENDER : https://byui-cse.github.io/cse340-ww-content/views/render-app-server.html
