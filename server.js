@@ -1,31 +1,22 @@
-/* ******************************************
+const express = require("express");
+const expressLayouts = require("express-ejs-layouts");
+const session = require("express-session");
+const env = require("dotenv").config();
+const pool = require("./database/");
+const utilities = require('./utilities/');
+const baseController = require("./controllers/baseController");
+const bodyParser = require("body-parser");
 
- * This server.js file is the primary file of the 
- * application. It is used to control the project.
- *********************************
+const app = express();
 
-require session package and DB connection******/
- const session = require('express-session')
-const pool = require('./database/')
- /***********************/
-const utilities = require('./utilities/')
-const express = require("express")
-const expressLayouts = require("express-ejs-layouts")
-const env = require("dotenv").config()
-const app = express()
-const baseController = require("./controllers/baseController")
-const inventoryRoute = require("./routes/inventoryRoute")
+// Route imports
+const inventoryRoute = require("./routes/inventoryRoute");
+const accountRoute = require("./routes/accountRoute");
 const errorRoutes = require("./routes/errorRoutes");
+const static = require("./routes/static");
 
-app.use("/", errorRoutes);
-
-
-
-
-/* ***********************
- * Middleware
- * ************************/
- app.use(session({
+// Session middleware
+app.use(session({
   store: new (require('connect-pg-simple')(session))({
     createTableIfMissing: true,
     pool,
@@ -34,71 +25,62 @@ app.use("/", errorRoutes);
   resave: true,
   saveUninitialized: true,
   name: 'sessionId',
-}))
+}));
 
+// Flash messages middleware
+app.use(require('connect-flash')());
+app.use((req, res, next) => {
+  res.locals.messages = require('express-messages')(req, res);
+  next();
+});
 
-// Express Messages Middleware
-app.use(require('connect-flash')())
-app.use(function(req, res, next){
-  res.locals.messages = require('express-messages')(req, res)
-  next()
-})
-/* ***********************
- * View Engine and Templates
- *************************/
-app.set('view engine', 'ejs')
-app.use(expressLayouts)
-app.set('layout', './layouts/layout')
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+// Body parser middleware
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
-// Serve static files from /public
-app.use(express.static('public'))
+/* View Engine */
+app.set("view engine", "ejs");
+app.use(expressLayouts);
+app.set("layout", "./layouts/layout");
 
-// Routes
-const static = require("./routes/static")
-app.use(static)
+// Static files
+app.use(express.static("public"));
 
-// index route unit 3 activity
-// Index route
-app.get("/", utilities.handleErrors(baseController.buildHome))
-// Inventory routes unit 3 activity
-app.use("/inv", inventoryRoute)
+// Main routes
+app.use(static);
+app.use("/inv", inventoryRoute);
+app.use("/account", accountRoute); // Note: singular "account" to match the route in header.ejs
 
+// Home route
+app.get("/", utilities.handleErrors(baseController.buildHome));
 
-// File Not Found Route - must be last route in list
-// Catch 404 errors
+// Error routes last
+app.use("/", errorRoutes);
+
+/* 404 catch-all */
 app.use((req, res, next) => {
   const error = new Error("Page not found");
   error.status = 404;
   next(error);
 });
 
-// Central error-handling middleware
-app.use((err, req, res, next) => {
+// Error handler
+app.use(async (err, req, res, next) => {
   console.error(err.stack);
   const status = err.status || 500;
-  res.status(status).render("error", {
+  const nav = await utilities.getNav();
+  res.status(status).render("errors/error", {
     title: "Server Error",
     message: err.message,
     status,
+    nav,
   });
 });
 
-
-
-
-/* ***********************
- * Local Server Information
- * Values from .env (environment) file
- *************************/
-const port = process.env.PORT
-const host = process.env.HOST
-
-/* ***********************
- * Log statement to confirm server operation
- *************************/
+const port = process.env.PORT;
+const host = process.env.HOST;
 app.listen(port, () => {
-  console.log(`app listening on ${host}:${port}`)
-})
-
-
-
+  console.log(`app listening on ${host}:${port}`);
+});

@@ -39,6 +39,18 @@ async function buildByInventoryId(req, res, next) {
   }
 }
 
+// management flash message
+invCont.buildManagement = async function (req, res, next) {
+  let nav = await utilities.getNav()
+  // If using flash messages:
+  let message = req.flash ? req.flash("message")[0]: null
+  res.render("inventory/management", {
+    title: "Inventory Management",
+    nav,
+    message,
+  })
+}
+
 module.exports = {
   ...invCont,
   buildByInventoryId

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Add New Classification</h2>
+<form action="/inventory/add-classification" method="POST">
+  <label for="classification_name">Classification Name: <small>(Only letters and numbers; no spaces or special characters)</small></label>
+  <input type="text" id="classification_name" name="classification_name" pattern="^[a-zA-Z0-9]+$" 
+    title="Only letters and numbers allowed. No spaces or special characters." 
+    required>
+  <button type="submit">Add Classification</button>
+</form>
+
+</body>
+</html>
