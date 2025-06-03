@@ -53,6 +53,7 @@ app.use(static);
 app.use("/inv", inventoryRoute);
 app.use("/account", accountRoute); // Note: singular "account" to match the route in header.ejs
 
+
 // Home route
 app.get("/", utilities.handleErrors(baseController.buildHome));
 
