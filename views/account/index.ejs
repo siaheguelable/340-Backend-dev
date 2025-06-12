@@ -1,0 +1,12 @@
+<%- include('../partials/header') %>
+
+<main>
+  <h1>You're logged in</h1>
+  <% if (messages && messages.notice && messages.notice.length > 0) { %>
+    <% messages.notice.forEach(function(msg) { %>
+      <p><%= msg %></p>
+    <% }) %>
+  <% } %>
+</main>
+
+<%- include('../partials/footer') %>

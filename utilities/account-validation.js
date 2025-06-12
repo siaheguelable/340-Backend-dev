@@ -1,60 +1,50 @@
 const utilities = require('.');
-const {body, validationResult} = require('express-validator');
-const validate={}
+const { body, validationResult } = require('express-validator');
 
 /*  **********************************
   *  Registration Data Validation Rules
   * ********************************* */
-  validate.registrationRules = () => {
-    return [
-      // firstname is required and must be string
-      body("account_firstname")
-        .trim()
-        .escape()
-        .notEmpty()
-        .isLength({ min: 1 })
-        .withMessage("Please provide a first name."), // on error this message is sent.
-  
-      // lastname is required and must be string
-      body("account_lastname")
-        .trim()
-        .escape()
-        .notEmpty()
-        .isLength({ min: 2 })
-        .withMessage("Please provide a last name."), // on error this message is sent.
-  
-      // valid email is required and cannot already exist in the DB
-      body("account_email")
+function registrationRules() {
+  return [
+    body("account_firstname")
+      .trim()
+      .escape()
+      .notEmpty()
+      .isLength({ min: 1 })
+      .withMessage("Please provide a first name."),
+    body("account_lastname")
+      .trim()
+      .escape()
+      .notEmpty()
+      .isLength({ min: 2 })
+      .withMessage("Please provide a last name."),
+    body("account_email")
       .trim()
       .escape()
       .notEmpty()
       .isEmail()
-      .normalizeEmail() // refer to validator.js docs
+      .normalizeEmail()
       .withMessage("A valid email is required."),
-  
-      // password is required and must be strong password
-      body("account_password")
-        .trim()
-        .notEmpty()
-        .isStrongPassword({
-          minLength: 12,
-          minLowercase: 1,
-          minUppercase: 1,
-          minNumbers: 1,
-          minSymbols: 1,
-        })
-        .withMessage("Password does not meet requirements."),
-    ]
-  }
+    body("account_password")
+      .trim()
+      .notEmpty()
+      .isStrongPassword({
+        minLength: 12,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 1,
+      })
+      .withMessage("Password does not meet requirements."),
+  ];
+}
 
-
-  /* ******************************
+/* ******************************
  * Check data and return errors or continue to registration
  * ***************************** */
-validate.checkRegData = async (req, res, next) => {
+async function checkRegData(req, res, next) {
   const { account_firstname, account_lastname, account_email } = req.body
-  let errors = []
-  errors = validationResult(req)
+  let errors = validationResult(req)
   if (!errors.isEmpty()) {
     let nav = await utilities.getNav()
     res.render("account/signup", {
@@ -64,10 +54,49 @@ validate.checkRegData = async (req, res, next) => {
       account_firstname,
       account_lastname,
       account_email,
+      messages: req.flash()
     })
     return
   }
   next()
 }
 
-module.exports = validate
+function loginRules() {
+  return [
+    body("account_email")
+      .trim()
+      .escape()
+      .notEmpty()
+      .isEmail()
+      .normalizeEmail()
+      .withMessage("A valid email is required."),
+    body("account_password")
+      .trim()
+      .notEmpty()
+      .withMessage("Password is required."),
+  ];
+}
+
+function checkLoginData(req, res, next) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    utilities.getNav().then(nav => {
+      res.render("account/login", {
+        title: "Login",
+        errors: errors.array(),
+        account_email: req.body.account_email,
+        nav,
+        messages: req.flash()
+      });
+    });
+    return;
+  }
+  next();
+}
+
+module.exports = {
+  loginRules,
+  registrationRules,
+  checkRegData,
+  checkLoginData
+};

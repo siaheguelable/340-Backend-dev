@@ -10,14 +10,6 @@ router.get("/type/:classificationId", invController.buildByClassificationId);
 router.get("/detail/:invId", invController.buildByInventoryId);
 
 
-// Route to build inventory management view
-router.get("/", invController.buildManagement);
-
-// Route to build add classification view
-router.get("/add-classification", invController.buildAddClassification);
-
-// Route to build add vehicle view
-router.get("/add-inventory", invController.buildAddVehicle);
 
 
 // POST: Handle form submission
@@ -43,6 +35,6 @@ router.post('/add-inventory', (req, res) => {
   req.flash('message', 'Vehicle added successfully!');
   res.redirect('/inv'); // or wherever you want to go after adding
 });
-// Route to build add vehicle view
+
 router.get("/add-inventory", invController.buildAddVehicle);
 module.exports = router;

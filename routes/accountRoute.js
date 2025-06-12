@@ -2,7 +2,8 @@ const express = require("express")
 const router = express.Router()
 const utilities = require("../utilities")
 const accountController = require("../controllers/accountsController")
-const regValidate = require('../utilities/account-validation')
+const regValidate = require("../utilities/account-validation");
+
 
 // Route to login view
 router.get("/login", utilities.handleErrors(accountController.buildLogin))
@@ -10,7 +11,13 @@ router.get("/login", utilities.handleErrors(accountController.buildLogin))
 router.get("/signup", utilities.handleErrors(accountController.buildSignup))
 
 // for handling the login form submission
-router.post("/login", utilities.handleErrors(accountController.handleLogin))
+// Process the login request
+router.post(
+  "/login",
+  regValidate.loginRules(),
+  regValidate.checkLoginData, // Make sure this is defined and exported!
+  utilities.handleErrors(accountController.accountLogin)
+)
 // for handling the signup form submission
 // Process the registration data
 router.post(
@@ -21,4 +28,6 @@ router.post(
   utilities.handleErrors(accountController.buildSignup)
 )
 
+
+router.get("/", accountController.showAccountView);
 module.exports = router

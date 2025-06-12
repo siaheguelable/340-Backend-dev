@@ -1,11 +1,11 @@
 const express = require("express");
 const expressLayouts = require("express-ejs-layouts");
 const session = require("express-session");
-const env = require("dotenv").config();
+require("dotenv").config();
 const pool = require("./database/");
 const utilities = require('./utilities/');
 const baseController = require("./controllers/baseController");
-const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
@@ -36,9 +36,9 @@ app.use((req, res, next) => {
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-// Body parser middleware
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+app.use(cookieParser());
+
+app.use(utilities.checkJWTToken);
 
 /* View Engine */
 app.set("view engine", "ejs");
@@ -51,8 +51,7 @@ app.use(express.static("public"));
 // Main routes
 app.use(static);
 app.use("/inv", inventoryRoute);
-app.use("/account", accountRoute); // Note: singular "account" to match the route in header.ejs
-
+app.use("/account", accountRoute);
 
 // Home route
 app.get("/", utilities.handleErrors(baseController.buildHome));
@@ -80,8 +79,8 @@ app.use(async (err, req, res, next) => {
   });
 });
 
-const port = process.env.PORT;
-const host = process.env.HOST;
+const port = process.env.PORT || 5500;
+const host = process.env.HOST || "localhost";
 app.listen(port, () => {
   console.log(`app listening on ${host}:${port}`);
 });
