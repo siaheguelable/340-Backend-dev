@@ -1,5 +1,5 @@
+const { body, validationResult } = require("express-validator");
 const utilities = require('.');
-const { body, validationResult } = require('express-validator');
 
 /*  **********************************
   *  Registration Data Validation Rules
@@ -94,9 +94,68 @@ function checkLoginData(req, res, next) {
   next();
 }
 
+function updateAccountRules() {
+  return [
+    body("account_firstname").trim().notEmpty().withMessage("First name is required."),
+    body("account_lastname").trim().notEmpty().withMessage("Last name is required."),
+    body("account_email").trim().isEmail().withMessage("A valid email is required."),
+    // Add more rules as needed
+  ];
+}
+
+// Example checkUpdateAccount middleware
+async function checkUpdateAccount(req, res, next) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    let nav = await require("../utilities").getNav();
+    return res.render("account/update", {
+      title: "Update Account",
+      nav,
+      errors: errors.array(),
+      // ...add sticky fields here...
+    });
+  }
+  next();
+}
+
+function passwordRules() {
+  return [
+    body("account_password")
+      .trim()
+      .isLength({ min: 12 })
+      .withMessage("Password must be at least 12 characters long.")
+      .matches(/[A-Z]/)
+      .withMessage("Password must contain at least one uppercase letter.")
+      .matches(/[a-z]/)
+      .withMessage("Password must contain at least one lowercase letter.")
+      .matches(/[0-9]/)
+      .withMessage("Password must contain at least one number.")
+      .matches(/[!@#$%^&*(),.?":{}|<>]/)
+      .withMessage("Password must contain at least one special character.")
+  ];
+}
+
+async function checkPassword(req, res, next) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    let nav = await require("../utilities").getNav();
+    return res.render("account/update", {
+      title: "Update Account",
+      nav,
+      errors: errors.array(),
+      // ...add sticky fields here...
+    });
+  }
+  next();
+}
+
 module.exports = {
   loginRules,
   registrationRules,
   checkRegData,
-  checkLoginData
+  checkLoginData,
+  updateAccountRules,
+  checkUpdateAccount,
+  passwordRules,
+  checkPassword,
 };

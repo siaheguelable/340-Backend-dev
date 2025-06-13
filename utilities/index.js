@@ -136,5 +136,18 @@ Util.checkJWTToken = (req, res, next) => {
  **************************************** */
 Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
 
+/* ****************************************
+ * Unit 5 Activity JWT Token
+ * Middleware to check if user is logged in
+ **************************************** */
+Util.checkLogin= (req,res, next) => {
+  if (res.locals.loggedin) {
+    next();
+  } else {
+    req.flash("notice", "Please log in");
+    res.redirect("/account/login");
+  }
+}
+
 module.exports = Util
 // This module provides utility functions for the application, including navigation generation, vehicle detail rendering, and error handling.

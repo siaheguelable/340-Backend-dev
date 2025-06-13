@@ -113,11 +113,111 @@ async function accountLogin(req, res) {
 /* ****************************************
  *  Show account management view
  * ************************************ */
-function showAccountView(req, res) {
+async function showAccountView(req, res) {
+  let nav = await utilities.getNav();
   res.render('account/index', {
     title: 'My Account',
+    nav,
     messages: req.flash()
   });
 }
 
-module.exports = { buildLogin, buildSignup, handleSignup, accountLogin, showAccountView };
+/* ****************************************
+ *  Deliver account update view
+ * *************************************** */
+async function buildUpdateView(req, res) {
+  let nav = await utilities.getNav();
+  res.render("account/update", {
+    title: "Update Account",
+    nav,
+    messages: req.flash()
+  });
+}
+
+/* ****************************************
+ *  Update account information
+ * *************************************** */
+async function updateAccount(req, res) {
+  let nav = await utilities.getNav();
+  const { account_firstname, account_lastname, account_email } = req.body;
+  try {
+    const updateResult = await accountModel.updateAccount(
+      req.session.accountId,
+      account_firstname,
+      account_lastname,
+      account_email
+    );
+    if (updateResult && updateResult.rowCount > 0) {
+      req.flash("notice", "Your account information has been updated.");
+      return res.redirect("/account/");
+    } else {
+      throw new Error("Account update failed. Please try again.");
+    }
+  } catch (error) {
+    req.flash("notice", "Sorry, the update failed: " + error.message);
+    return res.status(501).render("account/update", {
+      title: "Update Account",
+      nav,
+      errors: [error.message],
+      messages: req.flash()
+    });
+  }
+}
+
+/* ****************************************
+ *  Update account password
+ * *************************************** */
+async function updatePassword(req, res) {
+  let nav = await utilities.getNav();
+  const { current_password, new_password } = req.body;
+  try {
+    const accountData = await accountModel.getAccountById(req.session.accountId);
+    const passwordMatch = await bcrypt.compare(current_password, accountData.account_password);
+    if (!passwordMatch) {
+      req.flash("notice", "Current password is incorrect.");
+      return res.status(400).render("account/update-password", {
+        title: "Update Password",
+        nav,
+        errors: null,
+        messages: req.flash()
+      });
+    }
+    const hashedPassword = await bcrypt.hash(new_password, 10);
+    const updateResult = await accountModel.updatePassword(req.session.accountId, hashedPassword);
+    if (updateResult && updateResult.rowCount > 0) {
+      req.flash("notice", "Your password has been updated.");
+      return res.redirect("/account/");
+    } else {
+      throw new Error("Password update failed. Please try again.");
+    }
+  } catch (error) {
+    req.flash("notice", "Sorry, the update failed: " + error.message);
+    return res.status(501).render("account/update-password", {
+      title: "Update Password",
+      nav,
+      errors: [error.message],
+      messages: req.flash()
+    });
+  }
+}
+
+/* ****************************************
+ *  Logout process
+ * ************************************ */
+function logout(req, res) {
+  res.clearCookie("jwt");
+  req.flash("notice", "You have been logged out.");
+  res.redirect("/");
+}
+
+module.exports = {
+  buildLogin,
+  buildSignup,
+  handleSignup,
+  accountLogin,
+  showAccountView,
+  buildUpdateView,
+  updateAccount,
+  updatePassword,
+  logout
+};

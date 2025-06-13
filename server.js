@@ -6,6 +6,7 @@ const pool = require("./database/");
 const utilities = require('./utilities/');
 const baseController = require("./controllers/baseController");
 const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 
@@ -14,6 +15,7 @@ const inventoryRoute = require("./routes/inventoryRoute");
 const accountRoute = require("./routes/accountRoute");
 const errorRoutes = require("./routes/errorRoutes");
 const static = require("./routes/static");
+const addInventoryRoute = require("./routes/addInventoryRoute");
 
 // Session middleware
 app.use(session({
@@ -39,6 +41,16 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use(utilities.checkJWTToken);
+app.use((req, res, next) => {
+  res.locals.loggedin = req.cookies.jwt ? true : false;
+  if (req.cookies.jwt) {
+    const payload = jwt.verify(req.cookies.jwt, process.env.ACCESS_TOKEN_SECRET);
+    res.locals.account_firstname = payload.account_firstname;
+    res.locals.account_type = payload.account_type;
+    res.locals.account_id = payload.account_id;
+  }
+  next();
+});
 
 /* View Engine */
 app.set("view engine", "ejs");
@@ -52,6 +64,7 @@ app.use(express.static("public"));
 app.use(static);
 app.use("/inv", inventoryRoute);
 app.use("/account", accountRoute);
+app.use("/inv", addInventoryRoute); // This line is critical!
 
 // Home route
 app.get("/", utilities.handleErrors(baseController.buildHome));
@@ -59,7 +72,7 @@ app.get("/", utilities.handleErrors(baseController.buildHome));
 // Error routes last
 app.use("/", errorRoutes);
 
-/* 404 catch-all */
+// 404 handler (must be last)
 app.use((req, res, next) => {
   const error = new Error("Page not found");
   error.status = 404;

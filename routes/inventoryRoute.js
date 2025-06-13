@@ -2,7 +2,9 @@
 const express = require("express")
 const router = new express.Router() 
 const invController = require("../controllers/invController")
-const accountsController = require("../controllers/accountsController")
+const accountsController = require("../controllers/accountsController");
+const addVehicleController = require("../controllers/addVehicleController");
+const utilities = require("../utilities"); // <-- ADD THIS LINE
 
 // Route to build inventory by classification view
 router.get("/type/:classificationId", invController.buildByClassificationId);
@@ -37,4 +39,7 @@ router.post('/add-inventory', (req, res) => {
 });
 
 router.get("/add-inventory", invController.buildAddVehicle);
+
+
+
 module.exports = router;

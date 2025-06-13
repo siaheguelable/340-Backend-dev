@@ -1,30 +1,51 @@
 const express = require("express")
 const router = express.Router()
 const utilities = require("../utilities")
-const accountController = require("../controllers/add-inventoryController")
-const regValidate = require('../utilities/add-inventory-validation')
+const invController = require("../controllers/invController")
 const addVehicleController = require("../controllers/addVehicleController")
+const regValidate = require('../utilities/add-inventory-validation')
+const { checkEmployeeOrAdmin } = require("../utilities/accountTypeCheck")
 
+// Management route
+router.get("/",
+  utilities.checkLogin,
+  utilities.handleErrors(addVehicleController.buildManagement))
 
-//management rout
-
-router.get("/management",  utilities.handleErrors(addVehicleController.buildManagement))
-
-
-// add classifaction route
-// Route to add classifcation  view
+// Add classification view
 router.get("/add-classification", utilities.handleErrors(addVehicleController.buildAddClassification))
-// Route to add inventory view
-router.get("/add-inventory", utilities.handleErrors(addVehicleController.buildAddVehicle))
+// Add inventory view
+router.get("/add-inventory", checkEmployeeOrAdmin, utilities.handleErrors(addVehicleController.buildAddVehicle))
 
-// for handling adding classification
-router.post("/ladd-classification", utilities.handleErrors(addVehicleController.handleAddClassification))
-// for handling the signup form submission
-// Process the registration data
+// Handle adding classification
+router.post("/add-classification", utilities.handleErrors(addVehicleController.handleAddClassification))
+
+// Handle adding inventory (update this handler as needed)
 router.post(
   "/add-inventory",
-  // Validate the registration data
-  regValidate.registrationRules(),
-  regValidate.checkRegData,
-  utilities.handleErrors(addVehicleController.buildSignup)
+  // regValidate.registrationRules(),
+  // regValidate.checkRegData,
+  utilities.handleErrors(addVehicleController.handleAddInventory)
 )
+
+// AJAX: Get inventory by classification
+router.get(
+  "/getInventory/:classification_id",
+  utilities.handleErrors(invController.getInventoryJSON)
+);
+
+// Build edit inventory view
+router.get(
+  "/edit/:inv_id",
+  checkEmployeeOrAdmin,
+  utilities.handleErrors(addVehicleController.editInventoryView)
+);
+
+// Update inventory item
+router.post(
+  "/update",
+  regValidate.newInventoryRules(),
+  regValidate.checkUpdateData,
+  utilities.handleErrors(addVehicleController.updateInventory)
+);
+
+module.exports = router;
