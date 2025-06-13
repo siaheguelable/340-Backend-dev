@@ -3,6 +3,8 @@ const accountModel = require("../models/account-model");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
+const path = require("path");
+const fs = require("fs");
 
 /* ****************************************
  *  Deliver login view
@@ -115,10 +117,23 @@ async function accountLogin(req, res) {
  * ************************************ */
 async function showAccountView(req, res) {
   let nav = await utilities.getNav();
+  // Get these values from your session, JWT, or database as needed
+  const account_id = res.locals.account_id;
+  const profile_picture = res.locals.profile_picture; // or from DB
+  const bio = res.locals.bio; // or from DB
+
   res.render('account/index', {
     title: 'My Account',
     nav,
-    messages: req.flash()
+    messages: req.flash(),
+    account_firstname: res.locals.account_firstname,
+    account_type: res.locals.account_type,
+    account_id,
+    index: {
+      account_id,
+      profile_picture,
+      bio
+    }
   });
 }
 
@@ -210,6 +225,25 @@ function logout(req, res) {
   res.redirect("/");
 }
 
+// Render profile edit view
+async function buildProfileView(req, res) {
+  const profile = await accountModel.getProfile(req.params.account_id);
+  res.render("account/profile", {
+    title: "Edit Profile",
+    profile,
+    messages: req.flash()
+  });
+}
+
+// Handle profile update
+async function updateProfile(req, res) {
+  const { bio } = req.body;
+  let profile_picture = req.file ? "/uploads/" + req.file.filename : req.body.current_picture;
+  await accountModel.updateProfile(req.body.account_id, profile_picture, bio);
+  req.flash("notice", "Profile updated!");
+  res.redirect("/account/profile/" + req.body.account_id);
+}
+
 module.exports = {
   buildLogin,
   buildSignup,
@@ -219,5 +253,7 @@ module.exports = {
   buildUpdateView,
   updateAccount,
   updatePassword,
-  logout
+  logout,
+  buildProfileView,
+  updateProfile
 };

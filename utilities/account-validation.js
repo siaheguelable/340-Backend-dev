@@ -149,6 +149,12 @@ async function checkPassword(req, res, next) {
   next();
 }
 
+function profileRules() {
+  return [
+    body("bio").isLength({ max: 500 }).withMessage("Bio must be 500 characters or less.")
+    // Add file/image validation as needed
+  ];
+}
 module.exports = {
   loginRules,
   registrationRules,
@@ -158,4 +164,5 @@ module.exports = {
   checkUpdateAccount,
   passwordRules,
   checkPassword,
+  profileRules
 };
