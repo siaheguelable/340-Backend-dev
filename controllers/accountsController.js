@@ -227,11 +227,16 @@ function logout(req, res) {
 
 // Render profile edit view
 async function buildProfileView(req, res) {
+  let nav = await utilities.getNav();
   const profile = await accountModel.getProfile(req.params.account_id);
   res.render("account/profile", {
     title: "Edit Profile",
-    profile,
-    messages: req.flash()
+    nav,
+    index: {
+      account_id: req.params.account_id,
+      profile_picture: profile.profile_picture,
+      bio: profile.bio
+    }
   });
 }
 
