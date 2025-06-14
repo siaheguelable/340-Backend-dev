@@ -5,6 +5,7 @@ require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const path = require("path");
 const fs = require("fs");
+const { validationResult } = require("express-validator");
 
 /* ****************************************
  *  Deliver login view
@@ -142,9 +143,15 @@ async function showAccountView(req, res) {
  * *************************************** */
 async function buildUpdateView(req, res) {
   let nav = await utilities.getNav();
+  const account = await accountModel.getAccountById(req.params.account_id);
   res.render("account/update", {
     title: "Update Account",
     nav,
+    account_id: account.account_id,
+    account_firstname: account.account_firstname,
+    account_lastname: account.account_lastname,
+    account_email: account.account_email,
+    errors: [],
     messages: req.flash()
   });
 }
@@ -154,7 +161,20 @@ async function buildUpdateView(req, res) {
  * *************************************** */
 async function updateAccount(req, res) {
   let nav = await utilities.getNav();
-  const { account_firstname, account_lastname, account_email } = req.body;
+  const { account_id, account_firstname, account_lastname, account_email } = req.body;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.render("account/update", {
+      title: "Update Account",
+      nav,
+      account_id,
+      account_firstname,
+      account_lastname,
+      account_email,
+      errors: errors.array(),
+      messages: req.flash()
+    });
+  }
   try {
     const updateResult = await accountModel.updateAccount(
       req.session.accountId,
@@ -169,10 +189,13 @@ async function updateAccount(req, res) {
       throw new Error("Account update failed. Please try again.");
     }
   } catch (error) {
-    req.flash("notice", "Sorry, the update failed: " + error.message);
     return res.status(501).render("account/update", {
       title: "Update Account",
       nav,
+      account_id,
+      account_firstname,
+      account_lastname,
+      account_email,
       errors: [error.message],
       messages: req.flash()
     });

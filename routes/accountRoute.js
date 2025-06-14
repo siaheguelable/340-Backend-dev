@@ -6,6 +6,7 @@ const regValidate = require("../utilities/account-validation");
 const validate = require("../utilities/account-validation");
 const multer = require("multer");
 const upload = multer({ dest: "public/uploads/" });
+const { checkLogin } = require("../middlewares/authMiddleware");
 
 // Route to login view
 router.get("/login", utilities.handleErrors(accountController.buildLogin))
@@ -29,8 +30,8 @@ router.post(
 )
 
 router.get("/", accountController.showAccountView);
-router.get("/update/:account_id", accountController.buildUpdateView);
-router.post("/update", validate.updateAccountRules(), validate.checkUpdateAccount, accountController.updateAccount);
+router.get("/update/:account_id", checkLogin, accountController.buildUpdateView);
+router.post("/update", checkLogin, validate.updateAccountRules(), validate.checkUpdateAccount, accountController.updateAccount);
 router.post("/update-password", validate.passwordRules(), validate.checkPassword, accountController.updatePassword);
 router.get("/logout", accountController.logout);
 router.get("/profile/:account_id", accountController.buildProfileView);
