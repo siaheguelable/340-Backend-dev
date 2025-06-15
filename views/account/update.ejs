@@ -1,5 +1,6 @@
 <!-- filepath: c:\Users\curtis siahe\Documents\University Course\340-Backend-dev\views\account\update.ejs -->
 <h1>Update Account Information</h1>
+
 <% if (errors && errors.length > 0) { %>
   <ul>
     <% errors.forEach(function(error) { %>
@@ -7,6 +8,32 @@
     <% }) %>
   </ul>
 <% } %>
+
+<!-- Profile Picture Section -->
+<div>
+  <label>Profile Picture:</label>
+  <% if (index && index.profile_picture) { %>
+    <img src="<%= index.profile_picture %>" alt="Profile Picture" width="150">
+  <% } else { %>
+    <p>No profile picture uploaded.</p>
+  <% } %>
+</div>
+
+<!-- Profile Picture & Bio Update Form -->
+<form action="/account/profile" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="account_id" value="<%= index ? index.account_id : account_id %>">
+  <input type="hidden" name="current_picture" value="<%= index ? index.profile_picture : '' %>">
+  <div>
+    <input type="file" name="profile_picture" accept="image/*">
+  </div>
+  <div>
+    <label>Bio:</label>
+    <textarea name="bio" maxlength="500"><%= index ? index.bio : '' %></textarea>
+  </div>
+  <button type="submit">Update Profile</button>
+</form>
+
+<!-- Account Info Update Form -->
 <form action="/account/update" method="post">
   <input type="hidden" name="account_id" value="<%= account_id %>">
   <div>
@@ -23,3 +50,24 @@
   </div>
   <button type="submit">Update</button>
 </form>
+
+
+  <% if (typeof index !== "undefined") { %>
+    <h1><%= title %></h1>
+    <form action="/account/profile" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="account_id" value="<%= index.account_id %>">
+      <input type="hidden" name="current_picture" value="<%= index.profile_picture %>">
+      <div>
+        <label>Profile Picture:</label>
+        <% if (index.profile_picture) { %>
+          <img src="<%= index.profile_picture %>" alt="Profile Picture" width="100">
+        <% } %>
+        <input type="file" name="profile_picture" accept="image/*">
+      </div>
+      <div>
+        <label>Bio:</label>
+        <textarea name="bio" maxlength="500"><%= index.bio %></textarea>
+      </div>
+      <button type="submit">Update Profile</button>
+    </form>
+  <% } %>

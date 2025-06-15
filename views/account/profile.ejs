@@ -1,13 +1,15 @@
 <!-- filepath: c:\Users\curtis siahe\Documents\University Course\340-Backend-dev\views\account\profile.ejs -->
 <h1>Edit Profile</h1>
+<% if (index.profile_picture) { %>
+  <img src="<%= index.profile_picture %>" alt="Profile Picture" width="150">
+<% } else { %>
+  <p>No profile picture uploaded.</p>
+<% } %>
 <form action="/account/profile" method="post" enctype="multipart/form-data">
   <input type="hidden" name="account_id" value="<%= index.account_id %>">
   <input type="hidden" name="current_picture" value="<%= index.profile_picture %>">
   <div>
     <label>Profile Picture:</label>
-    <% if (index.profile_picture) { %>
-      <img src="<%= index.profile_picture %>" alt="Profile Picture" width="100">
-    <% } %>
     <input type="file" name="profile_picture" accept="image/*">
   </div>
   <div>

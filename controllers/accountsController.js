@@ -253,7 +253,7 @@ async function buildProfileView(req, res) {
   let nav = await utilities.getNav();
   const profile = await accountModel.getProfile(req.params.account_id);
   res.render("account/profile", {
-    title: "Edit Profile",
+    title: "Profile",
     nav,
     index: {
       account_id: req.params.account_id,
@@ -265,11 +265,12 @@ async function buildProfileView(req, res) {
 
 // Handle profile update
 async function updateProfile(req, res) {
-  const { bio } = req.body;
-  let profile_picture = req.file ? "/uploads/" + req.file.filename : req.body.current_picture;
-  await accountModel.updateProfile(req.body.account_id, profile_picture, bio);
+  const { bio, account_id, current_picture } = req.body;
+  // If a new file is uploaded, use its path; otherwise, keep the current picture
+  let profile_picture = req.file ? "/uploads/" + req.file.filename : current_picture;
+  await accountModel.updateProfile(account_id, profile_picture, bio);
   req.flash("notice", "Profile updated!");
-  res.redirect("/account/profile/" + req.body.account_id);
+  res.redirect("/account/profile/" + account_id);
 }
 
 module.exports = {
