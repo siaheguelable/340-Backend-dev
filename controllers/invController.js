@@ -116,10 +116,17 @@ invCont.getInventoryJSON = async (req, res, next) => {
   }
 }
 
-
-
+/* Middleware to check if user is Employee or Manager */
+function checkEmployeeOrManager(req, res, next) {
+  const type = res.locals.account_type || req.session.account_type;
+  if (type === "Employee" || type === "Manager") {
+    return next();
+  }
+  req.flash("notice", "You do not have access to this page.");
+  res.redirect("/account/");
+}
 
 module.exports = {
   ...invCont,
-
+  checkEmployeeOrManager
 };
