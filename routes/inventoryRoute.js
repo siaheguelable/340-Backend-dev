@@ -5,6 +5,8 @@ const invController = require("../controllers/invController")
 const accountsController = require("../controllers/accountsController");
 const addVehicleController = require("../controllers/addVehicleController");
 const utilities = require("../utilities"); // <-- ADD THIS LINE
+const { checkEmployeeOrManager } = require("../middlewares/authMiddleware");
+const inventoryController = require("../controllers/inventoryController");
 
 // Route to build inventory by classification view
 router.get("/type/:classificationId", invController.buildByClassificationId);
@@ -39,7 +41,7 @@ router.post('/add-inventory', (req, res) => {
 });
 
 router.get("/add-inventory", invController.buildAddVehicle);
-
+router.get("/management", checkEmployeeOrManager, inventoryController.managementView);
 
 
 module.exports = router;

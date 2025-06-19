@@ -51,6 +51,19 @@
   <button type="submit">Update</button>
 </form>
 
+<h2>Update Password</h2>
+<form action="/account/update-password" method="post">
+  <input type="hidden" name="account_id" value="<%= account_id %>">
+  <div>
+    <label for="current_password">Current Password:</label>
+    <input type="password" id="current_password" name="current_password" required>
+  </div>
+  <div>
+    <label for="new_password">New Password:</label>
+    <input type="password" id="new_password" name="new_password" required>
+  </div>
+  <button type="submit">Update Password</button>
+</form>
 
   <% if (typeof index !== "undefined") { %>
     <h1><%= title %></h1>
